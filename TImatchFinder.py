@@ -1,8 +1,17 @@
 from heroDict import heroes
 import requests
 import datetime
+import getpass
 import pandas
 import json
+
+def APIrequest(site):
+	r = requests.get(site)
+	if r.status_code == 200:
+		print (r.status_code)
+		return r.text
+	else:
+		print (r.status_code)
 
 def getJSON(fileName):
 	with open(fileName, 'r') as file:
@@ -48,11 +57,18 @@ def getTImatches():
 					matchDict[key] = match[key]
 			matchDF = matchDF.append(matchDict, ignore_index=True)
 	return cleanMatchDF(matchDF)
+
+def getMatchIDs(matchDF):
+	return matchDF['match_id'].values
 	
 def getMatchJSON(matchID):
+	key = getpass.getpass()
 	site = 'http://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/v1?match_id={}&key={}'.format(matchID, key)
 	
-matchDF = getTImatches()
+	req = APIrequest(site)
+	if req is not None:
+		json.loads(req)
+	
+#matchDF = getTImatches()
 
-for matchID in (matchDF['match_id'].values):
-	print (matchID)
+getMatchJSON(1)	
