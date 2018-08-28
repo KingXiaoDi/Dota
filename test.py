@@ -5,50 +5,6 @@ import numpy
 import json
 import sys
 
-
-def getJSON(fileName):
-	with open(fileName, 'r') as file:
-		return json.load(file)
-		
-def getHeroList():
-	heroDF = pandas.DataFrame()
-	fileName = './heroes.json'
-
-	heroJSON = getJSON(fileName)['result']
-	for each in heroJSON['heroes']:
-		heroDF = heroDF.append(each, ignore_index=True)
-
-	return heroDF.sort_values('id').reset_index(drop=True)
-	
-def getMatches():
-	matchDF = pandas.DataFrame()
-	fileName = './TImatches.json'
-	
-	matchJSON = getJSON(fileName)['result']
-	matchCount = matchJSON['total_results']
-	matches = matchJSON['matches']
-	
-	TIstartDate = datetime.datetime.strptime('Aug 15 2018', '%b %d %Y')
-	heroDF = getHeroList()
-	
-	for match in matches:
-		matchDict = {}
-		matchDate = (datetime.datetime.fromtimestamp(match['start_time']))
-		if matchDate > TIstartDate:
-			for key in match:
-				if key == 'players':
-					for player in match[key]:
-						heroID = player['hero_id']
-						print (heroes[heroDF.loc[heroDF['id']==heroID, 'name'].values[0]])
-				else:
-					matchDict[key] = match[key]
-			matchDF = matchDF.append(matchDict, ignore_index=True)
-		print ()
-	matchDF['start_time'] = pandas.to_datetime(matchDF['start_time'], unit='s')
-	matchDF['match_id'] = pandas.to_numeric(matchDF['match_id'])
-	columns = ['match_id', 'series_id', 'match_seq_num', 'start_time', 'series_type', 'radiant_team_id', 'dire_team_id', 'lobby_type']
-	return (matchDF.sort_values('start_time', ascending=False).reset_index(drop=True)[columns])	
-
 def checkTowerStatus(towerBit, side):
 	towerDict = {
 			 0:  'Tier 1 Top',
@@ -83,8 +39,7 @@ def checkRaxStatus(towerBit, side):
 			print ("{} {:12s} still standing.".format(side, raxDict[i]))
 		else:
 			print ("{} {:12s} has fallen.".format(side, raxDict[i]))
-			
-	
+				
 def getMatchJSON():
 	fileName = './miracleGPM.json'
 	
